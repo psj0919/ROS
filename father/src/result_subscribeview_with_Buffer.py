@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ##### DEFINITIONS
 
@@ -12,17 +12,18 @@
 #CAM_HEIGHT = 1080
 #CAM_CHANNELS = 3
 ### RESOLUTION_HD720
-#CAM_WIDTH = 1280
-#CAM_HEIGHT = 720
-#CAM_CHANNELS = 3
+# CAM_WIDTH = 1280
+# CAM_HEIGHT = 720
+# CAM_CHANNELS = 3
 ### RESOLUTION_VGA
-CAM_WIDTH = 672
-CAM_HEIGHT = 376
+CAM_WIDTH = 640
+CAM_HEIGHT = 480
 CAM_CHANNELS = 3
 #######
 WINDOW_NAME_RESULT = 'Result'
 ###
 from operator import mul
+from functools import reduce
 
 IMG_SHAPE_ZED = (CAM_HEIGHT, CAM_WIDTH, CAM_CHANNELS)
 IMG_SIZE_ZED = reduce(mul, IMG_SHAPE_ZED)
@@ -34,8 +35,9 @@ from sensor_msgs.msg import Image
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 
-from modules.ringbuff import RingBuffer
+from ringbuff import RingBuffer
 import threading
+
 
 ### Buffer Initialization
 BUFF_SIZE = 30
@@ -50,7 +52,7 @@ class Result_From_TX2:
 
 	def __init__(self):
 		self.bridge = CvBridge()
-		self.networkResult_sub = rospy.Subscriber('/preserve_network/result_only_Network', Image, self.resultPushBuffer)
+		self.networkResult_sub = rospy.Subscriber('/camera/color/image_raw', Image, self.resultPushBuffer)
 
 	def resultPushBuffer(self, msg):
 		global BUFF_COUNT
@@ -60,9 +62,10 @@ class Result_From_TX2:
 		except CvBridgeError as e:
 			print(e)
 		with result_buffer_lock:
-			result_buffer.push(cv_image.flatten().astype('float32'))
-			BUFF_COUNT += 1
-			print('The number of images buffered: ', BUFF_COUNT)
+			if not result_buffer.is_full():
+				result_buffer.push(cv_image.flatten().astype('float32'))
+				BUFF_COUNT += 1
+				print('The number of images buffered: ', BUFF_COUNT)
 			
 
 	def resultViewCallback(self, msg):
