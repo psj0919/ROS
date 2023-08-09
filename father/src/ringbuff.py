@@ -11,7 +11,9 @@ def ringbuff_deque_test():
     ringbuff = deque(np.zeros((15,ringlen,ringlen), dtype='f'), ringlen)
     for i in range(40):
         ringbuff.extend(i*np.ones((2,2,3), dtype='f')) # write
-        print np.array(ringbuff)
+        print (np.array(ringbuff))
+
+        
 class RingBuffer():
     "A 1D ring buffer using numpy arrays"
     def __init__(self, length, dtype='float64'):
@@ -79,13 +81,13 @@ if __name__ == '__main__':
     #ringbuff_deque_test()
     start = time()
     ringbuff_numpy_test()
-    print time() - start
+    print (time() - start)
     ringlen = 10
     ringbuff = RingBuffer(ringlen)
     ringbuff.push(np.ones(2, dtype='float64'))
     ringbuff.push(np.zeros(2, dtype='float64'))
     ringbuff.push(2*np.ones(2, dtype='float64'))
-    print ringbuff.get(3)
+    print (ringbuff.get(3))
     ringbuff.pop(3)
-    print ringbuff.get(2)
+    print (ringbuff.get(2))
     ringbuff.pop(2)
