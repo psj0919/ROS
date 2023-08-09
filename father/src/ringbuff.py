@@ -20,7 +20,7 @@ class RingBuffer():
         self.data = np.zeros(length, dtype=dtype)
         self.head = 0
         self.tail = 0
-        self.nb_data = 0
+        self.nb_data = 0     #현재 링버퍼에 저장된 데이터의 수
 
     def empty(self):
         self.head = 0
